@@ -16,8 +16,9 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import { useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import * as React from "react";
@@ -27,6 +28,7 @@ const drawerWidth = 240;
 function ResponsiveDrawer(props) {
   const { window } = props;
   const router = useRouter();
+  const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const [activeTab, setactiveTab] = React.useState(sidebarMenu[0]);
@@ -48,7 +50,24 @@ function ResponsiveDrawer(props) {
 
   const drawer = (
     <div>
-      <Toolbar />
+      {/* --- MODIFIED: Added Logo inside Toolbar --- */}
+      <Toolbar
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: theme.palette.secondary.main,
+        }}
+      >
+        <Image
+          src={"/5.png"}
+          alt="Company Logo"
+          width={180} // Adjust to your logo's width
+          height={40} // Adjust to your logo's height
+          style={{ objectFit: "contain" }}
+        />
+      </Toolbar>
+      {/* --- END OF MODIFICATION --- */}
       <Divider />
       <List>
         {sidebarMenu.map((menu, index) => (
@@ -75,6 +94,7 @@ function ResponsiveDrawer(props) {
       <AppBar
         position="fixed"
         sx={{
+          backgroundColor: theme.palette.secondary.main,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
         }}
@@ -89,9 +109,6 @@ function ResponsiveDrawer(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            theSharkkCo.
-          </Typography>
         </Toolbar>
       </AppBar>
       <Box

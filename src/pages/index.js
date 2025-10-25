@@ -1,3 +1,5 @@
+import Actions from "@/components/Actions";
+import AddProductPage from "@/components/AddProduct";
 import AllProducts from "@/components/all-products/Allproducts";
 import BulkUploads from "@/components/bulk-uploads/Bulkuploads";
 import Dashboard from "@/components/dashboard/MainDashboard";
@@ -144,7 +146,9 @@ function ResponsiveDrawer(props) {
         <Toolbar />
         {activeTab.id === "dashboard" && <Dashboard />}
         {activeTab.id === "all-products" && <AllProducts />}
+        {activeTab.id === "add-new-product" && <AddProductPage />}
         {activeTab.id === "bulk-upload" && <BulkUploads />}
+        {activeTab.id === "actions" && <Actions />}
       </Box>
     </Box>
   );

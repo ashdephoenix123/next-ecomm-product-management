@@ -34,6 +34,8 @@ export default function ProductForm({ product: productDetails }) {
   const router = useRouter();
   const [product, setProduct] = useState(productDetails);
 
+  const isEditMode = productDetails && productDetails._id;
+
   // Handler for top-level fields (name, description, category)
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,32 +88,74 @@ export default function ProductForm({ product: productDetails }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { _id, name, description, category, variants } = product;
-    const payload = {
-      productId: _id,
-      name,
-      description,
-      category,
-      variants,
-    };
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/updateCommodity`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+
+    if (isEditMode) {
+      // --- UPDATE LOGIC (Your existing code) ---
+      const { _id, name, description, category, variants } = product;
+      const payload = {
+        productId: _id,
+        name,
+        description,
+        category,
+        variants,
+      };
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/updateCommodity`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+        const data = await response.json(); // <-- Use 'data'
+        if (response.ok) {
+          // <-- Check response.ok
+          alert("Product updated successfully!");
+        } else {
+          alert(`Error: ${data.error || "Failed to update"}`);
         }
-      );
-      const productdetails = await response.json();
-      if (!productDetails.success) {
-        alert("Error occured");
+      } catch (error) {
+        console.log(error);
+        alert("Error occurred, check console");
       }
-    } catch (error) {
-      console.log(error);
-      alert("Error occured, check console");
+    } else {
+      // --- CREATE LOGIC (For new products) ---
+      const { name, description, category, variants } = product;
+      // Payload doesn't include _id or productId
+      const payload = { name, description, category, variants };
+
+      try {
+        // ASSUMPTION: You have a '/addCommodity' endpoint
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/addCommodity`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+        const data = await response.json();
+        if (response.ok) {
+          alert("Product created successfully!");
+          // Optional: Redirect to the new product's edit page or product list
+          // ASSUMPTION: The response 'data' includes the new product's slug
+          if (data.newProduct && data.newProduct.slug) {
+            router.push(`/admin/products/${data.newProduct.slug}`);
+          } else {
+            router.push("/"); // Fallback redirect
+          }
+        } else {
+          alert(`Error: ${data.error || "Failed to create product"}`);
+        }
+      } catch (error) {
+        console.log(error);
+        alert("Error occurred, check console");
+      }
     }
   };
 
@@ -124,39 +168,41 @@ export default function ProductForm({ product: productDetails }) {
           </Button>
         </Box>
         <Typography variant="h4" gutterBottom>
-          Product Details
+          {isEditMode ? "Edit Product" : "Add New Product"}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <Grid container spacing={3}>
             {/* --- Read-only Fields (Row 1) --- */}
-            <Grid size={{ xs: 12, md: 6 }}>
-              {" "}
-              {/* <-- UPDATED */}
-              <TextField
-                label="SKU"
-                value={product.sku}
-                fullWidth
-                inputProps={{
-                  readOnly: true,
-                }}
-                variant="filled"
-                helperText="Readonly"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              {" "}
-              {/* <-- UPDATED */}
-              <TextField
-                label="Slug"
-                value={product.slug}
-                fullWidth
-                inputProps={{
-                  readOnly: true,
-                }}
-                variant="filled"
-                helperText="Readonly"
-              />
-            </Grid>
+            {isEditMode && (
+              <>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  {/* <-- UPDATED */}
+                  <TextField
+                    label="SKU"
+                    value={product.sku}
+                    fullWidth
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    variant="filled"
+                    helperText="Readonly"
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  {/* <-- UPDATED */}
+                  <TextField
+                    label="Slug"
+                    value={product.slug}
+                    fullWidth
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    variant="filled"
+                    helperText="Readonly"
+                  />
+                </Grid>
+              </>
+            )}
 
             {/* --- Editable Fields (Full Width) --- */}
             <Grid size={12}>
@@ -372,7 +418,7 @@ export default function ProductForm({ product: productDetails }) {
                   Add Variant
                 </Button>
                 <Button type="submit" variant="contained" color="primary">
-                  Save Product
+                  {isEditMode ? "Save Changes" : "Create Product"}
                 </Button>
               </Stack>
             </Grid>

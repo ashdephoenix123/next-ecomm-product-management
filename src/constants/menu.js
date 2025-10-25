@@ -12,7 +12,7 @@ export const sidebarMenu = [
     id: "add-new-product",
     label: "Add New Product",
     icon: MailIcon,
-    href: "/",
+    href: "/product/add",
   },
   {
     id: "bulk-upload",
@@ -20,5 +20,10 @@ export const sidebarMenu = [
     icon: InboxIcon,
     href: "/bulk-upload",
   },
-  { id: "log-out", label: "Log Out", icon: InboxIcon, href: "/log-out" },
+  {
+    id: "actions",
+    label: "Actions",
+    icon: InboxIcon,
+    href: "/bulk-upload",
+  },
 ];

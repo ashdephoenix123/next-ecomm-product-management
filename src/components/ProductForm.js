@@ -20,36 +20,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useRouter } from "next/router";
 
 // --- Dummy Data ---
-const categoryOptions = ["Clothing", "Electronics", "Books", "Home Goods"];
+const categoryOptions = ["clothing", "electronics", "books", "home-decor"];
 
 const emptyVariant = {
   size: [],
   stock: 0,
   images: [],
-  color: [],
+  color: "",
   price: 0,
 };
-
-const initialProductData = {
-  sku: "SKU12345ABC",
-  slug: "sample-product-slug-auto",
-  name: "Sample Product Name",
-  description: "This is a description for the sample product.",
-  category: "Clothing",
-  variants: [
-    {
-      size: ["M", "L"],
-      stock: 100,
-      images: [
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100",
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100",
-      ],
-      color: ["Red", "Blue"],
-      price: 99.99,
-    },
-  ],
-};
-// --------------------
 
 export default function ProductForm({ product: productDetails }) {
   const router = useRouter();
@@ -105,10 +84,35 @@ export default function ProductForm({ product: productDetails }) {
     setProduct((prev) => ({ ...prev, variants: newVariants }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", product);
-    alert("Check the console for the form data object.");
+    const { _id, name, description, category, variants } = product;
+    const payload = {
+      productId: _id,
+      name,
+      description,
+      category,
+      variants,
+    };
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/updateCommodity`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const productdetails = await response.json();
+      if (!productDetails.success) {
+        alert("Error occured");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error occured, check console");
+    }
   };
 
   return (
@@ -136,6 +140,7 @@ export default function ProductForm({ product: productDetails }) {
                   readOnly: true,
                 }}
                 variant="filled"
+                helperText="Readonly"
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -149,6 +154,7 @@ export default function ProductForm({ product: productDetails }) {
                   readOnly: true,
                 }}
                 variant="filled"
+                helperText="Readonly"
               />
             </Grid>
 
@@ -283,7 +289,7 @@ export default function ProductForm({ product: productDetails }) {
                         fullWidth
                         InputProps={{
                           startAdornment: (
-                            <InputAdornment position="start">$</InputAdornment>
+                            <InputAdornment position="start">₹</InputAdornment>
                           ),
                         }}
                       />

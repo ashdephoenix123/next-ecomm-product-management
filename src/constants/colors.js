@@ -1,0 +1,17 @@
+export const colors = [
+  { id: "black", label: "Black" },
+  { id: "white", label: "White" },
+  { id: "red", label: "Red" },
+  { id: "blue", label: "Blue" },
+  { id: "green", label: "Green" },
+  { id: "yellow", label: "Yellow" },
+  { id: "purple", label: "Purple" },
+  { id: "pink", label: "Pink" },
+  { id: "orange", label: "Orange" },
+  { id: "brown", label: "Brown" },
+  { id: "gray", label: "Gray" },
+  { id: "beige", label: "Beige" },
+  { id: "navy", label: "Navy" },
+  { id: "maroon", label: "Maroon" },
+  { id: "teal", label: "Teal" },
+];

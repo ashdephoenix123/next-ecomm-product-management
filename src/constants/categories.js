@@ -1,0 +1,17 @@
+export const categories = [
+  { id: "accessories", label: "Accessories" },
+  { id: "clothing", label: "Clothing" },
+  { id: "electronics", label: "Electronics" },
+  { id: "books", label: "Books" },
+  { id: "home-decor", label: "Home Decor" },
+  { id: "beauty-health", label: "Beauty & Health" },
+  { id: "sports-outdoors", label: "Sports & Outdoors" },
+  { id: "toys-games", label: "Toys & Games" },
+  { id: "automotive", label: "Automotive" },
+  { id: "groceries", label: "Groceries" },
+  { id: "furniture", label: "Furniture" },
+  { id: "pet-supplies", label: "Pet Supplies" },
+  { id: "music-instruments", label: "Musical Instruments" },
+  { id: "art-craft", label: "Art & Craft" },
+  { id: "office-supplies", label: "Office Supplies" },
+];

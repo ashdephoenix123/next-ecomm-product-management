@@ -1,26 +1,22 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Paper,
-  Grid,
-  TextField,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Autocomplete,
-  InputAdornment,
-  IconButton,
-  Stack,
-} from "@mui/material";
+import { categories } from "@/constants/categories";
+import { colors } from "@/constants/colors";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useRouter } from "next/router";
-
-// --- Dummy Data ---
-const categoryOptions = ["clothing", "electronics", "books", "home-decor"];
+import { useState } from "react";
 
 const emptyVariant = {
   size: [],
@@ -33,6 +29,7 @@ const emptyVariant = {
 export default function ProductForm({ product: productDetails }) {
   const router = useRouter();
   const [product, setProduct] = useState(productDetails);
+  console.log(product);
 
   const isEditMode = productDetails && productDetails._id;
 
@@ -226,22 +223,33 @@ export default function ProductForm({ product: productDetails }) {
                 rows={4}
               />
             </Grid>
+
             <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
-                <InputLabel id="category-label">Category</InputLabel>
-                <Select
-                  labelId="category-label"
-                  label="Category"
-                  name="category"
+                <Autocomplete
                   value={product.category}
-                  onChange={handleChange}
-                >
-                  {categoryOptions.map((cat) => (
-                    <MenuItem key={cat} value={cat}>
-                      {cat}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  onChange={(event, newValue) => {
+                    setProduct((prev) => ({
+                      ...prev,
+                      category: newValue?.id || "",
+                    }));
+                  }}
+                  disablePortal
+                  autoHighlight
+                  options={categories}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Category"
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                    />
+                  )}
+                />
               </FormControl>
             </Grid>
 
@@ -277,9 +285,16 @@ export default function ProductForm({ product: productDetails }) {
                         freeSolo
                         options={[]}
                         value={variant.size}
-                        onChange={(event, newValue) =>
-                          handleAutocompleteChange(index, "size", newValue)
-                        }
+                        onChange={(event, newValue) => {
+                          let valuesInUpper = newValue.map((val) =>
+                            val.toUpperCase()
+                          );
+                          handleAutocompleteChange(
+                            index,
+                            "size",
+                            valuesInUpper
+                          );
+                        }}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -290,24 +305,22 @@ export default function ProductForm({ product: productDetails }) {
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
-                      {" "}
-                      {/* <-- UPDATED */}
-                      {/* <Autocomplete
-                        multiple
-                        freeSolo
-                        options={[]}
+                      <Autocomplete
                         value={variant.color}
-                        onChange={(event, newValue) =>
-                          handleAutocompleteChange(index, "color", newValue)
-                        }
+                        onChange={(event, newValue) => {
+                          handleAutocompleteChange(
+                            index,
+                            "color",
+                            newValue?.id
+                          );
+                        }}
+                        disablePortal
+                        autoHighlight
+                        options={colors}
                         renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Colors"
-                            placeholder="Type and press Enter"
-                          />
+                          <TextField {...params} label="Color" />
                         )}
-                      /> */}
+                      />
                     </Grid>
 
                     {/* Row 2: Stock & Price */}

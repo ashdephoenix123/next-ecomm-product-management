@@ -1,5 +1,6 @@
 import { categories } from "@/constants/categories";
 import { colors } from "@/constants/colors";
+import newProduct from "@/constants/newProduct";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -139,13 +140,7 @@ export default function ProductForm({ product: productDetails }) {
         const data = await response.json();
         if (response.ok) {
           alert("Product created successfully!");
-          // Optional: Redirect to the new product's edit page or product list
-          // ASSUMPTION: The response 'data' includes the new product's slug
-          if (data.newProduct && data.newProduct.slug) {
-            router.push(`/admin/products/${data.newProduct.slug}`);
-          } else {
-            router.push("/"); // Fallback redirect
-          }
+          setProduct(newProduct);
         } else {
           alert(`Error: ${data.error || "Failed to create product"}`);
         }
@@ -239,15 +234,7 @@ export default function ProductForm({ product: productDetails }) {
                   options={categories}
                   sx={{ width: 300 }}
                   renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Category"
-                      slotProps={{
-                        inputLabel: {
-                          shrink: true,
-                        },
-                      }}
-                    />
+                    <TextField {...params} label="Category" />
                   )}
                 />
               </FormControl>

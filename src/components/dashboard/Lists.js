@@ -208,7 +208,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable({ products }) {
+export default function EnhancedTable({ products, setIsUpdated }) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("product-name");
   const [selected, setSelected] = React.useState([]);
@@ -281,9 +281,30 @@ export default function EnhancedTable({ products }) {
     router.push("/product/" + productSlug);
   };
 
-  const handleDelete = (e) => {
+  const handleDelete = async (e, productId) => {
     e.stopPropagation();
-    alert("deleted");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/deleteCommodities`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productIds: [productId] }),
+        }
+      );
+      const jsonResponse = await response.json();
+      if (jsonResponse.success) {
+        setIsUpdated((prev) => !prev);
+      } else {
+        throw new Error(jsonResponse);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error deleting product, check console!");
+    }
   };
 
   return (
@@ -316,7 +337,7 @@ export default function EnhancedTable({ products }) {
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.id}
+                    key={row._id}
                     selected={isItemSelected}
                     sx={{ cursor: "pointer" }}
                   >
@@ -360,7 +381,10 @@ export default function EnhancedTable({ products }) {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton aria-label="delete" onClick={handleDelete}>
+                        <IconButton
+                          aria-label="delete"
+                          onClick={(e) => handleDelete(e, row._id)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>

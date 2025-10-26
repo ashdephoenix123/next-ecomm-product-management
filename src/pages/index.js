@@ -2,9 +2,14 @@ import Actions from "@/components/Actions";
 import AddProductPage from "@/components/AddProduct";
 import AllProducts from "@/components/all-products/Allproducts";
 import BulkUploads from "@/components/bulk-uploads/Bulkuploads";
+import Category1 from "@/components/categories/Category1";
+import Category2 from "@/components/categories/Category2";
+import Category3 from "@/components/categories/Category3";
 import Dashboard from "@/components/dashboard/MainDashboard";
 import { sidebarMenu } from "@/constants/menu";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Collapse } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -24,6 +29,43 @@ import PropTypes from "prop-types";
 import * as React from "react";
 
 const drawerWidth = 240;
+
+const ListsWithOptions = ({ menu, setactiveTab, activeTab }) => {
+  const [open, setOpen] = React.useState(true);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
+  return (
+    <>
+      <ListItemButton onClick={handleClick}>
+        <ListItemIcon>
+          <menu.icon />
+        </ListItemIcon>
+        <ListItemText primary={menu.label} />
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          {menu.options.map((option) => (
+            <ListItemButton
+              sx={{ pl: 4 }}
+              key={option.id}
+              onClick={() => setactiveTab(option)}
+              selected={activeTab.id === option.id}
+            >
+              <ListItemIcon>
+                <option.icon />
+              </ListItemIcon>
+              <ListItemText primary={option.label} />
+            </ListItemButton>
+          ))}
+        </List>
+      </Collapse>
+    </>
+  );
+};
 
 function ResponsiveDrawer(props) {
   const { window } = props;
@@ -70,16 +112,31 @@ function ResponsiveDrawer(props) {
       {/* --- END OF MODIFICATION --- */}
       <Divider />
       <List>
-        {sidebarMenu.map((menu, index) => (
-          <ListItem key={menu.id} disablePadding>
-            <ListItemButton onClick={() => setactiveTab(menu)}>
-              <ListItemIcon>
-                <menu.icon />
-              </ListItemIcon>
-              <ListItemText primary={menu.label} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {sidebarMenu.map((menu, index) => {
+          if (Object.keys(menu).includes("options")) {
+            return (
+              <ListsWithOptions
+                key={menu.id}
+                menu={menu}
+                setactiveTab={setactiveTab}
+                activeTab={activeTab}
+              />
+            );
+          } else
+            return (
+              <ListItem key={menu.id} disablePadding>
+                <ListItemButton
+                  onClick={() => setactiveTab(menu)}
+                  selected={activeTab.id === menu.id}
+                >
+                  <ListItemIcon>
+                    <menu.icon />
+                  </ListItemIcon>
+                  <ListItemText primary={menu.label} />
+                </ListItemButton>
+              </ListItem>
+            );
+        })}
       </List>
     </div>
   );
@@ -165,6 +222,9 @@ function ResponsiveDrawer(props) {
         {activeTab.id === "all-products" && <AllProducts />}
         {activeTab.id === "add-new-product" && <AddProductPage />}
         {activeTab.id === "bulk-upload" && <BulkUploads />}
+        {activeTab.id === "category1" && <Category1 />}
+        {activeTab.id === "category2" && <Category2 />}
+        {activeTab.id === "category3" && <Category3 />}
         {activeTab.id === "actions" && <Actions />}
       </Box>
     </Box>

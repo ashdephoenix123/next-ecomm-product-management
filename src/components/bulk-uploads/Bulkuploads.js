@@ -4,6 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import CloseIcon from "@mui/icons-material/Close";
 import DescriptionIcon from "@mui/icons-material/Description";
+import toast from "react-hot-toast";
 
 const BulkUploads = () => {
   const [file, setFile] = useState(null);
@@ -93,11 +94,13 @@ const BulkUploads = () => {
       if (res.ok) {
         setStatus(`Uploaded! Inserted ${data.inserted} rows`);
         handleRemoveFile(); // Clear file on successful upload
+        toast.success("Successfully uploaded products");
       } else {
         setStatus(`Error: ${data.error}`);
       }
     } catch (err) {
       setStatus(`Error: ${err.message}`);
+      toast.error("Error uploading bulk products");
     } finally {
       // Clear status message after 3 seconds, whether success or error
       setTimeout(() => {

@@ -25,21 +25,10 @@ import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import * as React from "react";
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+// Note: getComparator and descendingComparator are no longer needed
+// if all sorting is done server-side. However, we keep them
+// in case you want to re-enable any client-side sorting.
+// For a pure server-side table, these can be deleted.
 
 const headCells = [
   {
@@ -57,18 +46,18 @@ const headCells = [
     reorder: false,
   },
   {
-    id: "name",
+    id: "name", // This should match the 'sortby' value, e.g., 'name'
     numeric: false,
     disablePadding: false,
     label: "Product Name",
-    reorder: true,
+    reorder: true, // This column can be sorted
   },
   {
     id: "category",
     numeric: false,
     disablePadding: false,
     label: "Category",
-    reorder: true,
+    reorder: true, // This column can be sorted
   },
   {
     id: "variants",
@@ -95,6 +84,8 @@ function EnhancedTableHead(props) {
     rowCount,
     onRequestSort,
   } = props;
+
+  // This now calls the prop handler, which will trigger an API call in the parent
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -124,8 +115,11 @@ function EnhancedTableHead(props) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={
-                headCell.reorder ? createSortHandler(headCell.id) : () => {}
+                headCell.reorder ? createSortHandler(headCell.id) : undefined
               }
+              // Disable sorting if headCell.reorder is false
+              hideSortIcon={!headCell.reorder}
+              disabled={!headCell.reorder}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -184,7 +178,7 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          Products
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -208,24 +202,38 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable({ products, setIsUpdated }) {
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("product-name");
+// --- This is now a "Controlled Component" ---
+export default function EnhancedTable({
+  products,
+  setIsUpdated,
+  // --- New props for server-side state ---
+  totalCommodities,
+  page,
+  rowsPerPage,
+  order,
+  orderBy,
+  // --- New prop handlers to notify parent of changes ---
+  onPageChange,
+  onRowsPerPageChange,
+  onRequestSort,
+}) {
+  // Local state for UI purposes is kept
   const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(true);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const router = useRouter();
 
+  // --- State for page, rowsPerPage, order, and orderBy is REMOVED ---
+
+  // This handler now calls the prop passed from the parent
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+    // The parent component will handle setting the new order and orderBy
+    onRequestSort(event, property);
   };
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = products.map((n) => n.id);
+      // Selects all IDs *on the current page*
+      const newSelected = products.map((n) => n._id); // Use _id or id
       setSelected(newSelected);
       return;
     }
@@ -251,13 +259,14 @@ export default function EnhancedTable({ products, setIsUpdated }) {
     setSelected(newSelected);
   };
 
+  // This handler now calls the prop passed from the parent
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    onPageChange(event, newPage);
   };
 
+  // This handler now calls the prop passed from the parent
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    onRowsPerPageChange(event);
   };
 
   const handleChangeDense = (event) => {
@@ -265,16 +274,12 @@ export default function EnhancedTable({ products, setIsUpdated }) {
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
+  // We use totalCommodities (total from server) instead of products.length
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - products.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - totalCommodities) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      [...products]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
-  );
+  // --- The React.useMemo for 'visibleRows' is REMOVED ---
+  // The 'products' prop is now the source of truth for the current page.
 
   const handleEdit = (e, productSlug) => {
     e.stopPropagation();
@@ -323,21 +328,23 @@ export default function EnhancedTable({ products, setIsUpdated }) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={visibleRows.length}
+              // rowCount is the number of items on the current page
+              rowCount={products.length}
             />
             <TableBody>
+              {/* We map over 'products' directly. This is now the paginated list from the server. */}
               {products.map((row, index) => {
-                const isItemSelected = selected.includes(row.id);
+                const isItemSelected = selected.includes(row._id); // Use _id or id
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.id)}
+                    onClick={(event) => handleClick(event, row._id)} // Use _id or id
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row._id}
+                    key={row._id} // Use _id or id
                     selected={isItemSelected}
                     sx={{ cursor: "pointer" }}
                   >
@@ -350,14 +357,6 @@ export default function EnhancedTable({ products, setIsUpdated }) {
                         }}
                       />
                     </TableCell>
-                    {/* <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {index + 1}
-                    </TableCell> */}
                     <TableCell align="left">{row.sku}</TableCell>
                     <TableCell align="left">
                       <Image
@@ -370,7 +369,7 @@ export default function EnhancedTable({ products, setIsUpdated }) {
                     </TableCell>
                     <TableCell align="left">{row.name}</TableCell>
                     <TableCell align="left">{row.category}</TableCell>
-                    <TableCell align="left">{row.category}</TableCell>
+                    <TableCell align="left">{row.variants.length}</TableCell>
                     <TableCell align="right">
                       <Tooltip title="Click to Edit">
                         <IconButton
@@ -383,7 +382,7 @@ export default function EnhancedTable({ products, setIsUpdated }) {
                       <Tooltip title="Delete">
                         <IconButton
                           aria-label="delete"
-                          onClick={(e) => handleDelete(e, row._id)}
+                          onClick={(e) => handleDelete(e, row._id)} // Use _id or id
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -407,17 +406,14 @@ export default function EnhancedTable({ products, setIsUpdated }) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={products.length}
+          // --- Pagination props are now controlled by the parent ---
+          count={totalCommodities}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      {/* <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      /> */}
     </Box>
   );
 }

@@ -145,7 +145,8 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+  const { numSelected, selected, onDeleteSelected } = props;
+
   return (
     <Toolbar
       sx={[
@@ -183,16 +184,12 @@ function EnhancedTableToolbar(props) {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={() => onDeleteSelected(selected)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+        <></>
       )}
     </Toolbar>
   );
@@ -221,6 +218,8 @@ export default function EnhancedTable({
   const [selected, setSelected] = React.useState([]);
   const [dense, setDense] = React.useState(true);
   const router = useRouter();
+
+  console.log(selected);
 
   // --- State for page, rowsPerPage, order, and orderBy is REMOVED ---
 
@@ -312,10 +311,42 @@ export default function EnhancedTable({
     }
   };
 
+  const handleDeleteSelected = async (selectedIds) => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Delete ${selectedIds.length} selected products?`)) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/deleteCommodities`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productIds: selectedIds }),
+        }
+      );
+      const jsonResponse = await response.json();
+      if (jsonResponse.success) {
+        setIsUpdated((prev) => !prev);
+        setSelected([]); // clear selection after delete
+      } else {
+        throw new Error(jsonResponse.message || "Delete failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting selected products. Check console for details.");
+    }
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          selected={selected}
+          onDeleteSelected={handleDeleteSelected}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -336,7 +367,6 @@ export default function EnhancedTable({
               {products.map((row, index) => {
                 const isItemSelected = selected.includes(row._id); // Use _id or id
                 const labelId = `enhanced-table-checkbox-${index}`;
-
                 return (
                   <TableRow
                     hover
@@ -359,16 +389,28 @@ export default function EnhancedTable({
                     </TableCell>
                     <TableCell align="left">{row.sku}</TableCell>
                     <TableCell align="left">
-                      <Image
-                        src={row.variants[0].images[0]}
-                        width={80}
-                        height={80}
-                        alt={row.name + "-image"}
-                        className="w-16 h-16 object-cover"
-                      />
+                      {row.variants[0].images.length > 0 ? (
+                        <Image
+                          src={row.variants[0].images[0] || null}
+                          width={80}
+                          height={80}
+                          alt={row.name + "-image"}
+                          className="w-16 h-16 object-cover"
+                        />
+                      ) : (
+                        <Typography variant="caption">
+                          No Image found!
+                        </Typography>
+                      )}
                     </TableCell>
                     <TableCell align="left">{row.name}</TableCell>
-                    <TableCell align="left">{row.category}</TableCell>
+                    <TableCell align="left">
+                      {row.category.main?.label +
+                        " - " +
+                        row.category.sub?.label +
+                        " - " +
+                        row.category.third?.label}
+                    </TableCell>
                     <TableCell align="left">{row.variants.length}</TableCell>
                     <TableCell align="right">
                       <Tooltip title="Click to Edit">

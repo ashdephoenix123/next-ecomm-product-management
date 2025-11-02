@@ -10,6 +10,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [inProgress, setInProgress] = useState(false);
 
   const updateUser = (e) => {
     const { name, value } = e.target;
@@ -24,12 +25,14 @@ const Login = () => {
   const submitUser = async (e) => {
     e.preventDefault();
     try {
+      setInProgress(true);
       const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/adminlogin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(user),
+        credentials: "include",
       });
       const data = await res.json();
       if (res.status !== 200) throw new Error(data.error);
@@ -41,6 +44,8 @@ const Login = () => {
     } catch (error) {
       console.log(1, error);
       toast.error(error.message);
+    } finally {
+      setInProgress(false);
     }
   };
 
@@ -98,11 +103,11 @@ const Login = () => {
 
             <div>
               <button
-                disabled={!user.email || !user.password}
+                disabled={!user.email || !user.password || inProgress}
                 type="submit"
                 className="mt-2 group relative flex w-full disabled:cursor-not-allowed justify-center rounded-md bg-green-600 py-4 px-2  text-md font-semibold text-white hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:bg-green-300"
               >
-                Log In
+                {!inProgress ? "Log In" : "Logging In..."}
               </button>
             </div>
           </form>

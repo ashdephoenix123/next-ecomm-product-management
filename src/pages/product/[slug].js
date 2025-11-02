@@ -24,7 +24,7 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        product: productdetails[0],
+        product: productdetails,
       },
     };
   } catch (error) {

@@ -24,6 +24,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import * as React from "react";
+import toast from "react-hot-toast";
 
 // Note: getComparator and descendingComparator are no longer needed
 // if all sorting is done server-side. However, we keep them
@@ -302,6 +303,7 @@ export default function EnhancedTable({
       const jsonResponse = await response.json();
       if (jsonResponse.success) {
         setIsUpdated((prev) => !prev);
+        toast.success("Commodity Deleted successfully!");
       } else {
         throw new Error(jsonResponse);
       }

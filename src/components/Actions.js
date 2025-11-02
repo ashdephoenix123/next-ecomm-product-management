@@ -6,10 +6,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 const Actions = () => {
   const [open, setOpen] = React.useState(false);
   const [isCompleted, setisCompleted] = useState(true);
+  const [inProgress, setInProgress] = useState(true);
+  const router = useRouter();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -43,6 +46,27 @@ const Actions = () => {
     }
   };
 
+  const logOut = async () => {
+    try {
+      setInProgress(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/adminlogout`,
+        {
+          method: "POST",
+          body: JSON.stringify({}),
+          credentials: "include",
+        }
+      );
+      if (response.status !== 200) throw new Error("Log out failed!");
+      router.push("/login");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error logging out!");
+    } finally {
+      setInProgress(false);
+    }
+  };
+
   return (
     <Paper
       sx={{
@@ -66,9 +90,16 @@ const Actions = () => {
       >
         Delete All Commodities
       </Button>
-      {/* <Button sx={{ maxWidth: "fit-content" }} variant="contained">
+      <Button
+        sx={{ maxWidth: "fit-content" }}
+        variant="contained"
+        onClick={logOut}
+        disabled={!inProgress}
+        loading={!inProgress}
+        loadingPosition="start"
+      >
         Log Out
-      </Button> */}
+      </Button>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Delete all Commodities</DialogTitle>

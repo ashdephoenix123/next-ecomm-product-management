@@ -417,11 +417,13 @@ export default function ProductForm({ product: productDetails }) {
   return (
     <Box sx={{ maxWidth: 900, margin: "auto", p: 2 }}>
       <Paper elevation={3} sx={{ p: 2 }}>
-        <Box sx={{ mb: 2 }}>
-          <Button variant="contained" onClick={() => router.push("/")}>
-            Go Back
-          </Button>
-        </Box>
+        {isEditMode && (
+          <Box sx={{ mb: 2 }}>
+            <Button variant="contained" onClick={() => router.push("/")}>
+              Go Back
+            </Button>
+          </Box>
+        )}
         <Typography variant="h4" gutterBottom>
           {isEditMode ? "Edit Product" : "Add New Product"}
         </Typography>

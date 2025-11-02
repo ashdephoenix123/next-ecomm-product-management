@@ -26,7 +26,7 @@ const Login = () => {
     e.preventDefault();
     try {
       setInProgress(true);
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + `/adminlogin`, {
+      const res = await fetch(`/api/adminlogin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

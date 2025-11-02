@@ -104,7 +104,7 @@ export default function ProductForm({ product: productDetails }) {
     (async () => {
       setLoading((prev) => ({ ...prev, brands: true }));
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/getBrands");
+        const res = await fetch("/api/getBrands");
         const data = await res.json();
         if (data.success) setBrands(data.brands);
       } catch (error) {
@@ -117,7 +117,7 @@ export default function ProductForm({ product: productDetails }) {
     (async () => {
       setLoading((prev) => ({ ...prev, cat1: true }));
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/apiCat1");
+        const res = await fetch("/api/apiCat1");
         const data = await res.json();
         if (data.success) setCat1List(data.data);
       } catch (error) {
@@ -130,7 +130,7 @@ export default function ProductForm({ product: productDetails }) {
     (async () => {
       setLoading((prev) => ({ ...prev, cat2: true }));
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/apiCat2");
+        const res = await fetch("/api/apiCat2");
         const data = await res.json();
         if (data.success) setCat2List(data.data);
       } catch (error) {
@@ -143,7 +143,7 @@ export default function ProductForm({ product: productDetails }) {
     (async () => {
       setLoading((prev) => ({ ...prev, cat3: true }));
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/apiCat3");
+        const res = await fetch("/api/apiCat3");
         const data = await res.json();
         if (data.success) setCat3List(data.data);
       } catch (error) {

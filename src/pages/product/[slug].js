@@ -17,9 +17,7 @@ export default ProductPage;
 export async function getServerSideProps(context) {
   try {
     const slug = context.query.slug;
-    const fetchdetails = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/getCommodity?slug=${slug}`
-    );
+    const fetchdetails = await fetch(`/api/getCommodity?slug=${slug}`);
     const productdetails = await fetchdetails.json();
 
     return {

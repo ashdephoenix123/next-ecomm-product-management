@@ -27,12 +27,9 @@ const Actions = () => {
     try {
       handleClose();
       setisCompleted(false);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/deleteAllCommodities`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`/api/deleteAllCommodities`, {
+        method: "DELETE",
+      });
       if (response.status === 200) {
         toast.success("Successfully deleted all Commodities!");
       } else {
@@ -49,14 +46,11 @@ const Actions = () => {
   const logOut = async () => {
     try {
       setInProgress(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/adminlogout`,
-        {
-          method: "POST",
-          body: JSON.stringify({}),
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`/api/adminlogout`, {
+        method: "POST",
+        body: JSON.stringify({}),
+        credentials: "include",
+      });
       if (response.status !== 200) throw new Error("Log out failed!");
       router.push("/login");
     } catch (error) {

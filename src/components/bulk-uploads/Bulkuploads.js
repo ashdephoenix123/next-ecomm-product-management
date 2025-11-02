@@ -85,7 +85,7 @@ const BulkUploads = () => {
     setStatus("Uploading...");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload-csv`, {
+      const res = await fetch(`/api/upload-csv`, {
         method: "POST",
         body: formData,
       });

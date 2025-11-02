@@ -28,7 +28,7 @@ export default function Category1() {
   const [switchState, setSwitchState] = useState({}); // Stores { "id1": true, "id2": false }
 
   // --- UPDATED API URL ---
-  const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/apiCat1`;
+  const API_URL = `/api/apiCat1`;
 
   // --- Data Fetching ---
   const fetchCat1List = async () => {

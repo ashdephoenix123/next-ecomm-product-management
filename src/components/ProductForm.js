@@ -246,14 +246,11 @@ export default function ProductForm({ product: productDetails }) {
 
     try {
       // Call the new API endpoint
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/addBrand`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ label: dialogValue }),
-        }
-      );
+      const response = await fetch(`/api/addBrand`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ label: dialogValue }),
+      });
       const data = await response.json();
 
       if (response.ok && data.success) {
@@ -354,14 +351,11 @@ export default function ProductForm({ product: productDetails }) {
     if (isEditMode) {
       payload.productId = _id;
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/updateCommodity`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
+        const response = await fetch(`/api/updateCommodity`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
         const data = await response.json();
         if (response.ok) {
           alert("Product updated successfully!");
@@ -375,14 +369,11 @@ export default function ProductForm({ product: productDetails }) {
     } else {
       try {
         console.log(payload);
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/addCommodity`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
+        const response = await fetch(`/api/addCommodity`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
         const data = await response.json();
         if (response.ok) {
           alert("Product created successfully!");

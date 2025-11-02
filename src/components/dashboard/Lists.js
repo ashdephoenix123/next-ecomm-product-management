@@ -290,16 +290,13 @@ export default function EnhancedTable({
     e.stopPropagation();
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/deleteCommodities`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ productIds: [productId] }),
-        }
-      );
+      const response = await fetch(`/api/deleteCommodities`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productIds: [productId] }),
+      });
       const jsonResponse = await response.json();
       if (jsonResponse.success) {
         setIsUpdated((prev) => !prev);
@@ -318,16 +315,13 @@ export default function EnhancedTable({
     if (!confirm(`Delete ${selectedIds.length} selected products?`)) return;
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/deleteCommodities`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ productIds: selectedIds }),
-        }
-      );
+      const response = await fetch(`/api/deleteCommodities`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productIds: selectedIds }),
+      });
       const jsonResponse = await response.json();
       if (jsonResponse.success) {
         setIsUpdated((prev) => !prev);

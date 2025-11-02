@@ -40,8 +40,8 @@ export default function Category2() {
   // switchState removed as requested
 
   // --- API URLs ---
-  const API_URL_CAT1 = `${process.env.NEXT_PUBLIC_API_URL}/apiCat1`;
-  const API_URL_CAT2 = `${process.env.NEXT_PUBLIC_API_URL}/apiCat2`;
+  const API_URL_CAT1 = `/api/apiCat1`;
+  const API_URL_CAT2 = `/api/apiCat2`;
 
   // --- Data Fetching ---
   const fetchCat1 = async () => {

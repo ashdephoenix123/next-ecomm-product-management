@@ -28,9 +28,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function Category3Manage() {
   // --- API URLs ---
-  const API_URL_CAT1 = `${process.env.NEXT_PUBLIC_API_URL}/apiCat1`;
-  const API_URL_CAT2 = `${process.env.NEXT_PUBLIC_API_URL}/apiCat2`;
-  const API_URL_CAT3 = `${process.env.NEXT_PUBLIC_API_URL}/apiCat3`;
+  const API_URL_CAT1 = `/api/apiCat1`;
+  const API_URL_CAT2 = `/api/apiCat2`;
+  const API_URL_CAT3 = `/api/apiCat3`;
 
   // --- Form State ---
   const [label, setLabel] = useState("");

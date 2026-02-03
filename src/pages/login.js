@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Logo from "../../public/5.png";
 
 const Login = () => {
   const router = useRouter();
@@ -58,7 +59,7 @@ const Login = () => {
               width={320}
               height={80}
               className="mx-auto h-12 w-auto"
-              src="/5.png"
+              src={Logo}
               alt="Your Company"
             />
             <h2 className="mt-12 text-center text-3xl font-bold tracking-tight text-gray-900">

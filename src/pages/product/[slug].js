@@ -16,8 +16,13 @@ export default ProductPage;
 
 export async function getServerSideProps(context) {
   try {
+    const { headers } = context.req;
+    const baseURL = headers["x-forwarded-proto"] + "://" + headers["host"];
+
     const slug = context.query.slug;
-    const fetchdetails = await fetch(`/api/getCommodity?slug=${slug}`);
+    const fetchdetails = await fetch(
+      `${baseURL}/api/getCommodity?slug=${slug}`,
+    );
     const productdetails = await fetchdetails.json();
 
     return {
